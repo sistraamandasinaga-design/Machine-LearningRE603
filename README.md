@@ -23,15 +23,17 @@ Project ini bertujuan untuk memahami dasar:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-🗂 Struktur Repositori
-Machine-Learning-SEMS6
-Machine-Learning-SEMS6
+## 📁 Struktur Week 1
+
+```
+week1
 │
-├── week1
-    ├── Hands_On_Function_in_Python.ipynb
-    ├── Hands_On_Main_Principles_of_OOP.ipynb
-    ├── Hands_On_OOP_Paradigm_Concepts.ipynb
-    └── Week2_Tipe_Data.ipynb
+├── Hands_On_Function_in_Python.ipynb
+├── Hands_On_Main_Principles_of_OOP.ipynb
+├── Hands_On_OOP_Paradigm_Concepts.ipynb
+└── Week2_Tipe_Data.ipynb
+```
+
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
