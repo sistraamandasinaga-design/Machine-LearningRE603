@@ -96,20 +96,6 @@ Materi ini penting untuk memahami kondisi data sebelum digunakan dalam proses ma
 | `titanic.xlsx`                              | Dataset Titanic yang dipakai untuk latihan EDA              |
 
 ---
-
-## 🛠️ Teknologi yang Digunakan
-
-Beberapa tools yang dipakai dalam pengerjaan tugas ini:
-
-* Python 3
-* Jupyter Notebook
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Scikit-learn
-* SciPy
----
 ### WEEK 4
 
 Pada minggu ini dipelajari Supervised Learning (Regression) untuk memprediksi nilai numerik.
@@ -152,16 +138,26 @@ Pengujian dengan dataset
 | `hasil_knn.xlsx`                                     | Hasil output KNN         |
 
 ---
-
 🛠️ Teknologi yang Digunakan
-Python 3
-Jupyter Notebook
-Pandas
-NumPy
-Matplotlib
-Seaborn
-Scikit-learn
-SciPy
+
+Dalam pengerjaan repository ini, digunakan beberapa tools dan library berikut:
+
+💻 Bahasa Pemrograman
+# Python 3
+📓 Environment & Tools
+# Jupyter Notebook
+# Visual Studio Code
+📊 Data Processing & Analysis
+# Pandas
+# NumPy
+📈 Data Visualization
+# Matplotlib
+# Seaborn
+🤖 Machine Learning
+# Scikit-learn
+📚 Dataset & File Handling
+# CSV (Comma Separated Values)
+# Microsoft Excel (.xlsx)
 
 Library tersebut membantu dalam proses **analisis data, visualisasi data, dan pengolahan dataset** sebelum digunakan dalam machine learning.
 
