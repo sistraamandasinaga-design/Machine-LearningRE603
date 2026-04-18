@@ -34,16 +34,30 @@ Machine-Learning-SEMS6/
 │   ├── Hands_On_OOP_Paradigm_Concepts.ipynb
 │   └── Week2_Tipe_Data.ipynb
 │
-└── WEEK-3/
-    ├── 3. EDA and Feature Engineering (1).pptx
-    ├── Assignment_Week_3.ipynb
-    ├── california_dataset.csv
-    ├── company.csv
-    ├── EDA with Python.pdf
-    ├── Hands_On_Week_3_Feature_Engineering.ipynb
-    ├── TelcoCustomerChurn.csv
-    ├── TelcoCustomerChurn.xlsx
-    └── titanic.xlsx
+├── WEEK-3/
+│   ├── 3. EDA and Feature Engineering (1).pptx
+│   ├── Assignment_Week_3.ipynb
+│   ├── california_dataset.csv
+│   ├── company.csv
+│   ├── EDA with Python.pdf
+│   ├── Hands_On_Week_3_Feature_Engineering.ipynb
+│   ├── TelcoCustomerChurn.csv
+│   ├── TelcoCustomerChurn.xlsx
+│   └── titanic.xlsx
+│
+├── WEEK-4/
+│   ├── Regression.pdf
+│   ├── Supervised_Learning_Hands_On_Regresi.ipynb
+│   ├── USA_Housing.csv
+│   └── Week 4 - Introduction to Regression.pptx
+│
+└── WEEK-5/
+    ├── iris.csv
+    ├── titanic.csv
+    ├── hasil_knn.xlsx
+    ├── Supervised_Learning_Hands_On_Classification.ipynb
+    ├── Week 5 - Cara Kerja KNN.xlsx
+    └── Week 5 - Introduction to classification - KNN.pptx
 ```
 
 ---
@@ -95,6 +109,59 @@ Beberapa tools yang dipakai dalam pengerjaan tugas ini:
 * Seaborn
 * Scikit-learn
 * SciPy
+---
+### WEEK 4
+
+Pada minggu ini dipelajari Supervised Learning (Regression) untuk memprediksi nilai numerik.
+
+Materi meliputi:
+
+Konsep dasar regresi
+Linear Regression
+Implementasi menggunakan Python
+Penggunaan dataset housing
+
+| File                                         | Keterangan                              |
+| -------------------------------------------- | --------------------------------------- |
+| `Week 4 - Introduction to Regression.pptx`   | Materi dasar regresi                    |
+| `Regression.pdf`                             | Referensi tambahan regresi              |
+| `Supervised_Learning_Hands_On_Regresi.ipynb` | Implementasi regresi menggunakan Python |
+| `USA_Housing.csv`                            | Dataset housing                         |
+
+---
+WEEK 5
+
+Mempelajari Supervised Learning (Classification) dengan algoritma
+K-Nearest Neighbors (KNN).
+
+Materi meliputi:
+
+Konsep klasifikasi
+Cara kerja KNN
+Perhitungan jarak (distance)
+Implementasi Python
+Pengujian dengan dataset
+
+| File                                                 | Keterangan               |
+| ---------------------------------------------------- | ------------------------ |
+| `Week 5 - Introduction to classification - KNN.pptx` | Materi klasifikasi & KNN |
+| `Week 5 - Cara Kerja KNN.xlsx`                       | Perhitungan manual KNN   |
+| `Supervised_Learning_Hands_On_Classification.ipynb`  | Implementasi KNN         |
+| `iris.csv`                                           | Dataset Iris             |
+| `titanic.csv`                                        | Dataset Titanic          |
+| `hasil_knn.xlsx`                                     | Hasil output KNN         |
+
+---
+
+🛠️ Teknologi yang Digunakan
+Python 3
+Jupyter Notebook
+Pandas
+NumPy
+Matplotlib
+Seaborn
+Scikit-learn
+SciPy
 
 Library tersebut membantu dalam proses **analisis data, visualisasi data, dan pengolahan dataset** sebelum digunakan dalam machine learning.
 
