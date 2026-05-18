@@ -115,7 +115,7 @@ Penggunaan dataset housing
 | `USA_Housing.csv`                            | Dataset housing                         |
 
 ---
-WEEK 5
+### WEEK 5
 
 Mempelajari Supervised Learning (Classification) dengan algoritma
 K-Nearest Neighbors (KNN).
@@ -142,22 +142,29 @@ Pengujian dengan dataset
 
 Dalam pengerjaan repository ini, digunakan beberapa tools dan library berikut:
 
-💻 Bahasa Pemrograman
-# Python 3
-📓 Environment & Tools
-# Jupyter Notebook
-# Visual Studio Code
-📊 Data Processing & Analysis
-# Pandas
-# NumPy
-📈 Data Visualization
-# Matplotlib
-# Seaborn
-🤖 Machine Learning
-# Scikit-learn
-📚 Dataset & File Handling
-# CSV (Comma Separated Values)
-# Microsoft Excel (.xlsx)
+# 🧠 Machine Learning Project
+
+## 💻 Bahasa Pemrograman
+- Python 3
+
+## 📓 Environment & Tools
+- Jupyter Notebook  
+- Visual Studio Code  
+
+## 📊 Data Processing & Analysis
+- Pandas  
+- NumPy  
+
+## 📈 Data Visualization
+- Matplotlib  
+- Seaborn  
+
+## 🤖 Machine Learning
+- Scikit-learn  
+
+## 📚 Dataset & File Handling
+- CSV (Comma Separated Values)  
+- Microsoft Excel (.xlsx)  
 
 Library tersebut membantu dalam proses **analisis data, visualisasi data, dan pengolahan dataset** sebelum digunakan dalam machine learning.
 
