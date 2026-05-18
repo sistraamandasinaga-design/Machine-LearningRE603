@@ -1,0 +1,43 @@
+
+RINGKASAN HASIL NAÏVE BAYES CLASSIFICATION:
+
+1. DATASET:
+   - Total sampel: 200
+   - Training set: 160 (80.0%)
+   - Testing set: 40 (20.0%)
+   - Fitur numerik: 2
+   - Fitur kategorik: 2
+   - Target classes: 3 (Rendah, Sedang, Tinggi)
+
+2. PREPROCESSING:
+   - Missing values pada Departemen: 10 → diisi dengan mode
+   - Missing values pada Gaji: 10 → diisi dengan median
+   - Target variable: Kategori Gaji (binning berbasis kuartil)
+
+3. MODEL PERFORMANCE:
+   - Algoritma: Gaussian Naïve Bayes
+   - Accuracy: 0.3250 (32.50%)
+   - Precision: 0.3367
+   - Recall: 0.3250
+   - F1-Score: 0.3139
+
+4. CONFUSION MATRIX:
+   Prediksi benar untuk masing-masing kelas:
+   - Rendah: 3 / 13 (23.1%)
+   - Sedang: 3 / 13 (23.1%)
+   - Tinggi: 7 / 14 (50.0%)
+
+5. INTERPRETASI MODEL:
+   Model Naïve Bayes mampu memprediksi kategori gaji karyawan dengan akurasi
+   32.50%. Fitur yang paling berpengaruh adalah Lama_Kerja
+   dengan korelasi 0.0864.
+
+6. KEPUTUSAN BISNIS:
+   ✓ Model dapat digunakan untuk prediksi awal gaji karyawan baru
+   ✓ Perlu validasi lebih lanjut dengan data actual untuk optimasi
+   ✓ Rekomendasi: Tambahkan fitur lain seperti tingkat pendidikan, sertifikasi
+
+FILES OUTPUT:
+   - eda_gaji_karyawan.png: Visualisasi exploratory data analysis
+   - model_evaluation.png: Confusion matrix dan performance metrics
+   - feature_importance.png: Feature importance analysis

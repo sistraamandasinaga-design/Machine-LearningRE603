@@ -1,0 +1,503 @@
+═══════════════════════════════════════════════════════════════════════════════
+QUICK REFERENCE GUIDE - NAÏVE BAYES CLASSIFICATION CODE
+═══════════════════════════════════════════════════════════════════════════════
+
+📌 STRUKTUR KODE SECARA UMUM
+═══════════════════════════════════════════════════════════════════════════════
+
+Dari file: Naive_Bayes_UTS_Machine_Learning.ipynb
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ BAGIAN A: TEORI                                                         │
+│ - Definisi Naïve Bayes                                                 │
+│ - Teorema Bayes (rumus)                                                │
+│ - Asumsi naïve                                                         │
+│ - Varian Naïve Bayes (Gaussian, Multinomial, Categorical)             │
+│ - Kelebihan dan kelemahan                                              │
+│ - Aplikasi di dunia nyata                                             │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ BAGIAN B: PRAKTIK / CODING                                              │
+│ ├─ 1. Import Library                                                   │
+│ ├─ 2. Loading Data                                                     │
+│ ├─ 3. EDA (Exploratory Data Analysis)                                 │
+│ ├─ 4. Data Preprocessing                                              │
+│ ├─ 5. Feature Engineering & Encoding                                  │
+│ ├─ 6. Train-Test Split                                                │
+│ ├─ 7. Training Model                                                  │
+│ ├─ 8. Prediksi & Evaluasi                                             │
+│ ├─ 9. Confusion Matrix                                                │
+│ ├─ 10. Probability Analysis                                           │
+│ ├─ 11. Prediksi Data Baru                                             │
+│ └─ 12. Feature Importance                                             │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+🔍 PENJELASAN SETIAP CELL KODE
+═══════════════════════════════════════════════════════════════════════════════
+
+CELL 1: IMPORT LIBRARY
+───────────────────────────────────────────────────────────────────────────────
+import pandas as pd                    # Untuk manipulasi data (dataframe)
+import numpy as np                     # Untuk operasi numerik
+import matplotlib.pyplot as plt        # Untuk visualisasi grafik
+import seaborn as sns                  # Untuk visualisasi statistik
+
+from sklearn.model_selection import train_test_split  # Split train-test
+from sklearn.naive_bayes import GaussianNB           # Gaussian Naive Bayes
+from sklearn.preprocessing import LabelEncoder        # Encode categorical
+from sklearn.metrics import ...                       # Evaluasi metrics
+
+warnings.filterwarnings('ignore')      # Suppress warning messages
+
+─── Function ───
+plt.style.use('seaborn-v0_8-darkgrid')  # Set style untuk plot
+pd.set_option('display.max_columns')    # Display semua kolom
+
+
+CELL 2: LOADING DATA
+───────────────────────────────────────────────────────────────────────────────
+df = pd.read_csv('dataset_karyawan_missing.csv')  # Load CSV file
+
+print(f"Dataset Shape: {df.shape}")  # Cek dimensi (baris, kolom)
+print(df.head())                     # Lihat 5 baris pertama
+print(df.info())                     # Info: tipe data, missing values
+print(df.describe())                 # Statistik deskriptif
+
+─── Output Expected ───
+Dataset Shape: (200, 7)              # 200 rows, 7 columns
+Tipe data: int64, float64, object    # Berbagai tipe
+Missing values: ada di beberapa kolom
+
+
+CELL 3: EXPLORATORY DATA ANALYSIS (EDA)
+───────────────────────────────────────────────────────────────────────────────
+# Cek missing values
+missing_data = df.isnull().sum()     # Count missing per kolom
+print(missing_data[missing_data > 0]) # Show columns with missing
+
+# Cek unique values
+df['Departemen'].nunique()           # Jumlah kategori unik
+df['Departemen'].unique()            # List kategori unik
+
+# Range/minmax
+df['Gaji'].min(), df['Gaji'].max()  # Min dan max value
+
+# Visualisasi
+plt.hist(df['Gaji'], bins=30)       # Histogram distribusi
+df.boxplot(column='Gaji', by='Departemen')  # Box plot per group
+
+─── Key Observations ───
+- Departemen: 10 missing (5%)
+- Gaji: 10 missing (5%)
+- Usia range: 22-59 tahun
+- Gaji range: Rp 2.7M - Rp 6.9M
+
+
+CELL 4: DATA PREPROCESSING
+───────────────────────────────────────────────────────────────────────────────
+# Create working copy
+df_processed = df.copy()
+
+# Handle missing Departemen dengan MODE (nilai terbanyak)
+mode_dept = df_processed['Departemen'].mode()[0]  # 'HRD' (paling sering)
+df_processed['Departemen'].fillna(mode_dept, inplace=True)
+
+# Handle missing Gaji dengan MEDIAN
+median_gaji = df_processed['Gaji'].median()        # Rp 5,040,414
+df_processed['Gaji'].fillna(median_gaji, inplace=True)
+
+# KATEGORISASI GAJI (Create Target Variable)
+Q1 = df_processed['Gaji'].quantile(0.33)  # 33rd percentile
+Q2 = df_processed['Gaji'].quantile(0.67)  # 67th percentile
+
+def kategorikan_gaji(gaji):
+    if gaji < Q1:
+        return 'Rendah'
+    elif gaji < Q2:
+        return 'Sedang'
+    else:
+        return 'Tinggi'
+
+df_processed['Kategori_Gaji'] = df_processed['Gaji'].apply(kategorikan_gaji)
+
+─── Why These Choices? ───
+- MODE untuk kategorik: Imputation paling sensible
+- MEDIAN untuk numerik: Robust terhadap outliers
+- KUARTIL untuk kategorisasi: Balanced classes (~33% per class)
+
+
+CELL 5: FEATURE ENGINEERING & ENCODING
+───────────────────────────────────────────────────────────────────────────────
+# Select features
+fitur_numerik = ['Usia', 'Lama_Kerja']
+fitur_kategorik = ['Departemen', 'Status_Karyawan']
+
+X = df_processed[fitur_numerik + fitur_kategorik].copy()  # Features
+y = df_processed['Kategori_Gaji'].copy()                  # Target
+
+# LABEL ENCODING untuk categorical features
+label_encoders = {}  # Dictionary untuk menyimpan encoders
+
+for col in fitur_kategorik:
+    le = LabelEncoder()
+    X[col] = le.fit_transform(X[col])
+    label_encoders[col] = le
+    
+    # Mapping:
+    # Departemen: HRD→0, Logistik→1, Produksi→2, QC→3
+    # Status: Kontrak→0, Tetap→1
+
+─── Why Encoding? ───
+- Algoritma ML perlu input numerik, bukan text
+- LabelEncoder mengubah teks menjadi angka
+- Menyimpan encoder untuk inverse transform nanti
+
+
+CELL 6: TRAIN-TEST SPLIT
+───────────────────────────────────────────────────────────────────────────────
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,                  # Data dan target
+    test_size=0.2,         # 20% untuk testing, 80% training
+    random_state=42,       # Fixed seed untuk reproducibility
+    stratify=y             # Keep class proportions sama
+)
+
+─── Meaning ───
+X_train: 160 sampel fitur untuk training
+y_train: 160 sampel label untuk training
+X_test:  40 sampel fitur untuk testing
+y_test:  40 sampel label untuk testing
+
+random_state=42 → Setiap kali run, split sama. Jangan ubah!
+stratify=y      → Pastikan Rendah:Sedang:Tinggi ratio sama di train & test
+
+
+CELL 7: TRAINING MODEL
+───────────────────────────────────────────────────────────────────────────────
+from sklearn.naive_bayes import GaussianNB
+
+model = GaussianNB()              # Inisialisasi model
+model.fit(X_train, y_train)       # Training dengan X_train dan y_train
+
+─── What Happens Inside ───
+Model menghitung untuk setiap class (Rendah, Sedang, Tinggi):
+1. Prior probability: P(C) - berapa % sampel per class
+2. Mean (θ): rata-rata setiap fitur per class
+3. Variance (σ²): varians setiap fitur per class
+
+Stored dalam:
+- model.class_prior_     # P(C)
+- model.theta_           # mean per fitur
+- model.var_             # variance per fitur
+- model.classes_         # daftar class names
+
+
+CELL 8: PREDIKSI & EVALUASI
+───────────────────────────────────────────────────────────────────────────────
+# Prediksi
+y_pred = model.predict(X_test)              # Prediksi class
+y_pred_proba = model.predict_proba(X_test)  # Prediksi probability
+
+# Evaluasi dengan X_test, dibanding dengan y_test (ground truth)
+from sklearn.metrics import accuracy_score, precision_score, etc.
+
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='weighted')
+recall = recall_score(y_test, y_pred, average='weighted')
+f1 = f1_score(y_test, y_pred, average='weighted')
+
+─── Metrics Explanation ───
+Accuracy:  (TP+TN) / Total
+          → Berapa % prediksi benar dari semua prediksi
+
+Precision: TP / (TP+FP)
+          → Dari yang diprediksi POSITIVE, berapa % benar?
+
+Recall:    TP / (TP+FN)
+          → Dari yang seharusnya POSITIVE, berapa % ketangkap?
+
+F1-Score:  Harmonic mean dari Precision & Recall
+          → Balance antara precision dan recall
+
+
+CELL 9: CONFUSION MATRIX
+───────────────────────────────────────────────────────────────────────────────
+cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+
+Contoh output (3x3 matrix):
+                Predicted: Rendah  Sedang  Tinggi
+Actual Rendah              3       3       7
+Actual Sedang              1       3       9
+Actual Tinggi              4       3       7
+
+Interpretasi:
+- Diagonal: Prediksi BENAR (3, 3, 7)
+- Off-diagonal: Prediksi SALAH
+- Row: Actual class
+- Column: Predicted class
+
+Contoh: Model memprediksi 'Rendah' dengan benar 3x, salah 10x
+
+
+CELL 10: PROBABILITY ANALYSIS
+───────────────────────────────────────────────────────────────────────────────
+y_pred_proba[0]  # Array: [P(Rendah), P(Sedang), P(Tinggi)]
+                 # Contoh: [0.25, 0.30, 0.45]
+
+# Artinya untuk sample pertama:
+# P(Rendah) = 25% → confidence rendah
+# P(Sedang) = 30%
+# P(Tinggi) = 45% → PREDICTION CHOICE (highest probability)
+
+# Gunakan ini untuk uncertainty quantification
+confidence = np.max(y_pred_proba[0])  # 0.45
+if confidence < 0.4:
+    print("Low confidence - require human review")
+
+
+CELL 11: PREDIKSI DATA BARU
+───────────────────────────────────────────────────────────────────────────────
+# Buat data baru
+new_employees = pd.DataFrame({
+    'Usia': [28, 45],
+    'Lama_Kerja': [2, 15],
+    'Departemen': ['HRD', 'Produksi'],
+    'Status_Karyawan': ['Kontrak', 'Tetap']
+})
+
+# PENTING: Encode dulu dengan encoder yang sama dari training!
+new_employees_encoded = new_employees.copy()
+new_employees_encoded['Departemen'] = label_encoders['Departemen'].transform(...)
+new_employees_encoded['Status_Karyawan'] = label_encoders['Status_Karyawan'].transform(...)
+
+# Prediksi
+predictions = model.predict(new_employees_encoded)
+probabilities = model.predict_proba(new_employees_encoded)
+
+─── Why Encoding Sama? ───
+Jika training punya HRD→0, test juga harus HRD→0
+Jika encoding berbeda, predictions akan salah!
+
+
+CELL 12: FEATURE IMPORTANCE
+───────────────────────────────────────────────────────────────────────────────
+# Hitung korelasi dengan target
+X_with_target = X.copy()
+y_encoded = LabelEncoder().fit_transform(y)
+X_with_target['Target'] = y_encoded
+
+correlations = X_with_target.corr()['Target'].abs()
+                                     # Absolute value, sort descending
+
+Contoh output:
+Lama_Kerja: 0.0864  ← Most important
+Departemen: 0.0231
+Usia: 0.0208
+Status_Karyawan: 0.0103  ← Least important
+
+─── Interpretation ───
+Fitur dengan korelasi tinggi lebih berpengaruh pada target
+Fitur dengan korelasi rendah kurang berpengaruh
+Namun correlation bukan satu-satunya ukuran importance
+
+
+═══════════════════════════════════════════════════════════════════════════════
+🧮 MATHEMATICAL FLOW DALAM NAÏVE BAYES
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: COMPUTE PRIOR PROBABILITY
+──────────────────────────────────────
+P(Rendah) = jumlah sampel Rendah / total sampel
+          = 50 / 160 = 0.3125
+
+P(Sedang) = 51 / 160 = 0.3187
+P(Tinggi) = 59 / 160 = 0.3688
+
+
+STEP 2: COMPUTE LIKELIHOOD (UNTUK SATU SAMPLE BARU)
+──────────────────────────────────────────────────────
+Sample baru: Usia=28, Lama_Kerja=2, Departemen=HRD(0), Status=Kontrak(0)
+
+Untuk class RENDAH:
+P(Usia=28|Rendah) = Gaussian(28, μ=43.34, σ²=111.46)
+                  = (1/√(2π·111.46)) · exp(-(28-43.34)²/(2·111.46))
+                  = 0.0298
+
+P(Lama_Kerja=2|Rendah) = Gaussian(2, μ=14.78, σ²=63.73)
+                       = 0.0158
+
+... similar untuk fitur lainnya ...
+
+STEP 3: MULTIPLY ALL LIKELIHOODS
+──────────────────────────────────
+P(Features|Rendah) = P(Usia|Rendah) × P(Lama_Kerja|Rendah) × ... 
+                   = 0.0298 × 0.0158 × ...
+                   = 0.000123 (contoh)
+
+STEP 4: APPLY BAYES THEOREM
+─────────────────────────────
+P(Rendah|Features) ∝ P(Features|Rendah) × P(Rendah)
+                   ∝ 0.000123 × 0.3125
+                   ∝ 0.0000384
+
+Lakukan sama untuk P(Sedang|Features) dan P(Tinggi|Features)
+
+STEP 5: NORMALIZE (GET PROBABILITIES)
+───────────────────────────────────────
+Total = 0.0000384 + 0.0000412 + 0.0000401 (hypothetical)
+
+P(Rendah|Features) = 0.0000384 / Total = 0.3194
+P(Sedang|Features) = 0.0000412 / Total = 0.3429
+P(Tinggi|Features) = 0.0000401 / Total = 0.3376
+
+STEP 6: PREDICT
+────────────────
+Class dengan probability tertinggi = SEDANG (0.3429)
+PREDICTION = "SEDANG"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 VISUALISASI OUTPUTS
+═══════════════════════════════════════════════════════════════════════════════
+
+FILE 1: eda_gaji_karyawan.png (4 subplots)
+─────────────────────────────────────────────────────────────────────────────
+[Top Left] Histogram Distribusi Gaji
+           X-axis: Gaji (Rp), Y-axis: Frekuensi
+           Garis vertikal: Q1, Q2 (batas kategori)
+
+[Top Right] Pie Chart Kategori Gaji
+            Menunjukkan proporsi Rendah:Sedang:Tinggi
+
+[Bottom Left] Box Plot Gaji per Departemen
+             Menunjukkan distribusi gaji di setiap department
+             Terlihat outliers dan medians
+
+[Bottom Right] Scatter Plot Usia vs Gaji
+              Menunjukkan relationship antara dua fitur
+
+
+FILE 2: model_evaluation.png (2 subplots)
+─────────────────────────────────────────────────────────────────────────────
+[Left] Confusion Matrix Heatmap
+       Warna semakin gelap = nilai lebih tinggi
+       Diagonal utama = prediksi benar
+       Off-diagonal = error
+
+[Right] Performance Metrics Bar Chart
+        Menampilkan: Accuracy, Precision, Recall, F1-Score
+        Sebagai bar chart dengan values di atas
+
+
+FILE 3: feature_importance.png (2 subplots)
+─────────────────────────────────────────────────────────────────────────────
+[Left] Feature Importance Bar (Horizontal)
+       X-axis: Absolute Correlation
+       Y-axis: Nama fitur
+       Lama_Kerja paling penting
+
+[Right] Prediction Distribution Bar
+        X-axis: Kategori Gaji (Rendah, Sedang, Tinggi)
+        Y-axis: Jumlah prediksi
+        Menunjukkan balance dari predictions
+
+
+═══════════════════════════════════════════════════════════════════════════════
+⚡ TIPS & TRICKS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DEBUGGING HELP
+   ─────────────────
+   # Cek shape setiap saat
+   print(X_train.shape)  # (160, 4)
+   print(y_train.shape)  # (160,)
+   
+   # Cek tipe data
+   print(X_train.dtypes)
+   
+   # Cek ada missing?
+   print(X_train.isnull().sum())
+   
+   # Cek range value
+   print(X_train.describe())
+
+2. COMMON ERRORS
+   ──────────────
+   ERROR: "Index out of bounds"
+   → Pastikan test set labels sesuai training labels
+   → Use label_encoders yang sama untuk encode
+   
+   ERROR: "Shapes don't match"
+   → Check dimensi: features harus (n_samples, n_features)
+   
+   ERROR: "Missing values cause NaN predictions"
+   → Handle missing values sebelum model.fit()
+
+3. REPRODUCE RESULTS
+    ──────────────────
+   # Always set random_state untuk reproducibility
+   train_test_split(..., random_state=42)
+   GaussianNB()  # No random_state needed (deterministic)
+   np.random.seed(42)
+
+4. IMPROVE PREDICTIONS
+   ────────────────────
+   # Use confidence threshold
+   if np.max(y_pred_proba[i]) < 0.4:
+       prediction = "UNCERTAIN - NEED HUMAN REVIEW"
+   
+   # Feature scaling for some algos
+   from sklearn.preprocessing import StandardScaler
+   scaler = StandardScaler()
+   X_train_scaled = scaler.fit_transform(X_train)
+
+5. INTERPRET RESULTS
+    ──────────────────
+   # Precision-Recall tradeoff
+   - High precision: Few false positives
+   - High recall: Few false negatives
+   
+   # F1-Score
+   - Use when you care about balance
+   - Useful for imbalanced datasets
+
+
+═══════════════════════════════════════════════════════════════════════════════
+📝 CHECKLIST SEBELUM SUBMIT
+═══════════════════════════════════════════════════════════════════════════════
+
+Code Quality:
+☑ Semua variable names meaningful
+☑ Comments sudah ada
+☑ Code tidak redundant
+☑ Consistent indentation dan style
+
+Correctness:
+☑ Data loading works
+☑ Preprocessing hasil yang benar
+☑ Model training tanpa error
+☑ Predictions make sense
+☑ Metrics values reasonable
+
+Documentation:
+☑ README.txt tersedia
+☑ Setiap section dijelaskan
+☑ Visualisasi sudah ada
+☑ Output files tersimpan
+
+Submission:
+☑ Jupyter Notebook (.ipynb)
+☑ Python script (.py)
+☑ PNG visualizations
+☑ Text documentation
+☑ Summary report
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Created: 4 May 2026
+Version: 1.0
+Status: Ready for UTS Submission
+═══════════════════════════════════════════════════════════════════════════════
